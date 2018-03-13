@@ -5,6 +5,7 @@ import com.springrestapi.model.User;
 import com.springrestapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,6 +18,9 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -24,7 +28,11 @@ public class UserController {
 
     @PostMapping("/user")
     public User createUser(@Valid @RequestBody User user) {
-        return userRepository.save(user);
+        user.setUsername(user.getUsername());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        User newUser = userRepository.save(user);
+        return newUser;
     }
 
     @GetMapping("/users/{id}")
@@ -40,7 +48,7 @@ public class UserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword());
+        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
 
         User updatedUser = userRepository.save(user);
         return updatedUser;
