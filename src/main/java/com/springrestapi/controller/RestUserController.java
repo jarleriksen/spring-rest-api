@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class UserController {
+public class RestUserController {
 
     @Autowired
     UserRepository userRepository;
@@ -22,7 +22,7 @@ public class UserController {
     PasswordEncoder passwordEncoder;
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<User> fetchUsers() {
         return userRepository.findAll();
     }
 
@@ -36,9 +36,9 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable(value = "id") Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
+    public User fetchUserById(@PathVariable(value = "id") Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
 
     @PutMapping("/user/{id}")
@@ -55,9 +55,9 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<?> deleteNote(@PathVariable(value = "id") Long userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Note", "id", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         userRepository.delete(user);
 
