@@ -10,6 +10,7 @@ target/
 .springBeans
 application.properties
 .application.properties
+.DS_Store
 
 ### IntelliJ IDEA ###
 .idea
