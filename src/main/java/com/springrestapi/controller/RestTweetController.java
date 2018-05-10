@@ -1,15 +1,17 @@
 package com.springrestapi.controller;
 
 import com.springrestapi.exception.ResourceNotFoundException;
-import com.springrestapi.model.Tweet;
+import com.springrestapi.models.Tweet;
 import com.springrestapi.repository.TweetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.xml.ws.Response;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class RestTweetController {
@@ -19,6 +21,7 @@ public class RestTweetController {
 
     @GetMapping("/tweets")
     public List<Tweet> fetchTweets() {
+        System.out.println("Fetching Tweets");
         return tweetRepository.findAll();
     }
 
@@ -43,6 +46,22 @@ public class RestTweetController {
 
         tweetRepository.delete(tweet);
 
+        return ResponseEntity.ok().build();
+    }
+
+
+
+    @GetMapping("/retweet/{id}")
+    public ResponseEntity<?> retweet(@PathVariable(value = "id") Long tweetId) {
+        Tweet tweet = tweetRepository.findById(tweetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tweet", "id", tweetId));
+
+        Tweet retweet = new Tweet();
+
+        retweet.setTweet(tweet.getTweet());
+        retweet.setRetweet(1);
+
+        tweetRepository.save(retweet);
         return ResponseEntity.ok().build();
     }
 
